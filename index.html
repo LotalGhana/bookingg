@@ -10,11 +10,18 @@
 
   <!-- Hero Section -->
   <header class="hero">
-    <div class="hero-content">
-      <h1>Busua Beach Resort</h1>
-      <p>A Golden Beach Hotel</p>
-      <a href="booking.html" class="btn-primary">Book Now</a>
-    </div>
+   <section class="hero-slider">
+  <div class="slider">
+    <div class="slide active" style="background-image: url('images/busua1.jpg');"></div>
+    <div class="slide" style="background-image: url('images/busua2.jpg');"></div>
+    <div class="slide" style="background-image: url('images/busua3.jpg');"></div>
+  </div>
+  <div class="slider-overlay">
+    <h1>Busua Beach Resort</h1>
+    <a href="booking.html" class="btn-book-now">Book Now</a>
+  </div>
+</section>
+
   </header>
 
   <!-- About Section -->
@@ -65,6 +72,26 @@
       <a href="#">Contact</a>
     </div>
   </footer>
+<script>
+  const slides = document.querySelectorAll(".slide");
+  let currentSlide = 0;
+
+  function showSlide(index) {
+    const slider = document.querySelector(".slider");
+    slider.style.transform = `translateX(-${index * 100}%)`;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("active", i === index);
+    });
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  }
+
+  setInterval(nextSlide, 5000); // Change every 5 seconds
+</script>
 
 </body>
 </html>
