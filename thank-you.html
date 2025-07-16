@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You - Busua Beach Resort</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="hero small-hero">
+    <div class="hero-content">
+      <h1>Thank You!</h1>
+      <p>Your booking request has been received.</p>
+    </div>
+  </header>
+
+  <section class="thank-you">
+    <h2>We're excited to host you!</h2>
+    <p>You will receive a confirmation email shortly with your booking details.</p>
+    <a href="index.html" class="btn-primary" style="margin-top: 2rem;">Back to Home</a>
+  </section>
+
+
+
+  <footer>
+    <p>&copy; 2025 Busua Beach Resort | All rights reserved</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+    </div>
+  </footer>
+
+<script>
+ document.getElementById("downloadReceipt").addEventListener("click", () => {
+    if (!currentBooking) {
+      alert("Booking data not loaded yet.");
+      return;
+    };
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Busua Beach Resort", 20, 20);
+    doc.setFontSize(12);
+    doc.text("Booking Confirmation Receipt", 20, 30);
+    doc.line(20, 32, 190, 32); // underline
+
+    let y = 45;
+    doc.text(`Name: ${booking.name}`, 20, y);
+    doc.text(`Email: ${booking.email}`, 20, y + 10);
+    doc.text(`Room Type: ${booking.room}`, 20, y + 20);
+    doc.text(`Check-in Date: ${booking.checkin}`, 20, y + 30);
+    doc.text(`Check-out Date: ${booking.checkout}`, 20, y + 40);
+    doc.text(`Number of Guests: ${booking.guests}`, 20, y + 50);
+    doc.text(`Date Issued: ${new Date().toLocaleDateString()}`, 20, y + 60);
+
+    doc.text("Thank you for booking with us!", 20, y + 80);
+
+    doc.save(`BusuaBookingReceipt.pdf`);
+  });
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("downloadReceipt").click();
+  }, 1500);
+});
+
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Your Stay - Busua Beach Resort</title>
+  <link rel="stylesheet" href="style.css" />
+
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="hero small-hero">
+    <div class="hero-content">
+      <h1>Book Your Stay</h1>
+      <p>Secure your dream vacation today!</p>
+    </div>
+  </header>
+
+<!-- Room Previews Section -->
+<section class="rooms">
+  <h2>Our Rooms</h2>
+  <div class="room-grid">
+    <div class="room-card">
+      <img src="images/ocean-view.jpg" alt="Ocean View Room" />
+      <h3>Ocean View</h3>
+      <p>Wake up to a breathtaking view of the Atlantic Ocean right from your room.</p>
+      <p class="room-price">GHS 1,200 / night</p>
+    </div>
+    <div class="room-card">
+      <img src="images/semi-ocean.jpg" alt="Semi-Ocean View Room" />
+      <h3>Semi-Ocean View</h3>
+      <p>Enjoy partial ocean views with the comfort of our well-furnished rooms.</p>
+      <p class="room-price">GHS 900 / night</p>
+    </div>
+    <div class="room-card">
+      <img src="images/non-ocean.jpg" alt="Non-Ocean View Room" />
+      <h3>Non-Ocean View</h3>
+      <p>Ideal for budget-friendly stays without compromising on quality.</p>
+      <p class="room-price">GHS 700 / night</p>
+    </div>
+    <div class="room-card">
+      <img src="images/executive-suite.jpg" alt="Executive Suite" />
+      <h3>Executive Suite</h3>
+      <p>Spacious and elegant, designed for premium relaxation and comfort.</p>
+      <p class="room-price">GHS 1,500 / night</p>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Booking Form Section -->
+  <section class="booking-form">
+    <form action="thank-you.html" method="GET" class="form-container">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="checkin">Check-In Date</label>
+        <input type="date" id="checkin" name="checkin" required />
+      </div>
+
+      <div class="form-group">
+        <label for="checkout">Check-Out Date</label>
+        <input type="date" id="checkout" name="checkout" required />
+      </div>
+
+      <div class="form-group">
+        <label for="room">Room Type</label>
+        <select id="room" name="room" required>
+          <option value="">Select a room</option>
+          <option value="ocean-view">Ocean View</option>
+          <option value="semi-ocean-view">Semi-Ocean View</option>
+          <option value="non-ocean-view">Non-Ocean View</option>
+          <option value="executive-suite">Executive Suite</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="guests">Number of Guests</label>
+        <input type="number" id="guests" name="guests" min="1" max="10" required />
+      </div>
+
+<div class="form-group">
+  <label>Total Price</label>
+  <p id="total-price" class="total-display">GHS 0.00</p>
+</div>
+
+<div class="pay-button-container">
+ <button type="button" id="payNow" class="btn-primary">Pay Now</button>
+</div>
+  <button type="submit" id="submitBooking" class="btn-primary" disabled style="opacity:0.5;">Submit Booking</button>
+    </form>
+  </section>
+
+
+
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Busua Beach Resort | All rights reserved</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+    </div>
+  </footer>
+
+<!-- Paystack Script -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script>
+  // EmailJS Init
+  (function() {
+    emailjs.init("IbIgIEnLz0PUBTtx0"); // Your EmailJS user ID
+  })();
+
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
+    authDomain: "bbrghana.firebaseapp.com",
+    projectId: "bbrghana",
+    storageBucket: "bbrghana.firebasestorage.app",
+    messagingSenderId: "607583775596",
+    appId: "1:607583775596:web:c8a6877b516ee093c8e149"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Room Prices
+  const roomPrices = {
+    'ocean-view': 1200,
+    'semi-ocean-view': 900,
+    'non-ocean-view': 700,
+    'executive-suite': 1500
+  };
+
+  const roomSelect = document.getElementById('room');
+  const checkinInput = document.getElementById('checkin');
+  const checkoutInput = document.getElementById('checkout');
+  const priceDisplay = document.getElementById('total-price');
+
+  function calculateTotal() {
+    const roomType = roomSelect.value;
+    const checkinDate = new Date(checkinInput.value);
+    const checkoutDate = new Date(checkoutInput.value);
+
+    if (!roomType || isNaN(checkinDate) || isNaN(checkoutDate)) {
+      priceDisplay.textContent = "GHS 0.00";
+      return 0;
+    }
+
+    const oneDay = 1000 * 60 * 60 * 24;
+    const nights = Math.max(1, Math.ceil((checkoutDate - checkinDate) / oneDay));
+
+    const roomRate = roomPrices[roomType] || 0;
+    const total = roomRate * nights;
+
+    priceDisplay.textContent = `GHS ${total.toLocaleString()}.00`;
+    return total;
+  }
+
+  roomSelect.addEventListener('change', calculateTotal);
+  checkinInput.addEventListener('change', calculateTotal);
+  checkoutInput.addEventListener('change', calculateTotal);
+
+  // Elements
+  const payNowBtn = document.getElementById("payNow");
+  const submitBtn = document.getElementById("submitBooking");
+  const bookingForm = document.getElementById("bookingForm");
+
+  let paymentReference = null;
+
+  // 💳 Paystack Payment First
+  payNowBtn.addEventListener("click", () => {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const amount = calculateTotal();
+
+    if (!name || !email || amount <= 0) {
+      alert("Please fill all booking details before proceeding to payment.");
+      return;
+    }
+
+    const ref = 'BUSUA_' + Math.floor(Math.random() * 1000000000);
+
+    let handler = PaystackPop.setup({
+      key: 'pk_live_132bcfe226499aceb0d2ecd71f4890a495c283b3', // Replace with live/public key
+      email: email,
+      amount: amount * 100,
+      currency: 'GHS',
+      ref: ref,
+      metadata: {
+        custom_fields: [
+          {
+            display_name: "Guest Name",
+            variable_name: "guest_name",
+            value: name
+          }
+        ]
+      },
+      callback: function(response) {
+        alert("Payment successful!");
+        paymentReference = response.reference;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+      },
+      onClose: function() {
+        alert("Payment not completed.");
+      }
+    });
+
+    handler.openIframe();
+  });
+
+  // 📝 Submit Booking After Payment
+  bookingForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    if (!paymentReference) {
+      alert("Please complete payment first.");
+      return;
+    }
+
+    const booking = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      checkin: document.getElementById("checkin").value,
+      checkout: document.getElementById("checkout").value,
+      room: document.getElementById("room").value,
+      guests: document.getElementById("guests").value,
+      amount: calculateTotal(),
+      paid: true,
+      paymentReference: paymentReference,
+      timestamp: new Date()
+    };
+
+    db.collection("bookings")
+      .add(booking)
+      .then((docRef) => {
+        // Send confirmation email via EmailJS
+        emailjs.send("service_6sk9pnj", "template_w0pednl", {
+          name: booking.name,
+          email: booking.email,
+          checkin: booking.checkin,
+          checkout: booking.checkout,
+          room: booking.room,
+          guests: booking.guests,
+        })
+        .then(() => {
+          console.log("Email sent!");
+          window.location.href = `thank-you.html?bookingId=${docRef.id}`;
+        })
+        .catch((error) => {
+          console.error("Email error:", error);
+        });
+      })
+      .catch((error) => {
+        alert("Error saving booking: " + error.message);
+      });
+  });
+
+</script>
+
+
+</body>
+</html>
