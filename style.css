@@ -433,3 +433,26 @@ footer {
   font-weight: bold;
   cursor: pointer;
 }
+
+.auth-links {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+.auth-links a {
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #007bff;
+  padding: 6px 12px;
+  margin-left: 5px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.auth-links a:hover {
+  background-color: #0056b3;
+}
