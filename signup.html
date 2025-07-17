@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -19,42 +17,42 @@
     <p>Already have an account? <a href="signin.html">Sign in</a></p>
   </div>
 
-  <!-- Firebase SDKs -->
+  <!-- ✅ Firebase SDKs: Load in the correct order -->
   <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
 
-  <!-- Firebase Initialization -->
+  <!-- ✅ Firebase Initialization -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
       authDomain: "bbrghana.firebaseapp.com",
       projectId: "bbrghana",
-      storageBucket: "bbrghana.firebasestorage.app",
+      storageBucket: "bbrghana.appspot.com", // fixed typo: .app -> .appspot.com
       messagingSenderId: "607583775596",
       appId: "1:607583775596:web:c8a6877b516ee093c8e149"
     };
 
-    
+    // ✅ Make sure firebase is available globally before calling initializeApp
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
   </script>
 
-  <!-- Sign Up Logic -->
+  <!-- ✅ Signup Logic -->
   <script>
-    const signupForm = document.getElementById("signupForm");
-
-    signupForm.addEventListener("submit", (e) => {
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const fullName = document.getElementById("signupName").value.trim();
-      const email = document.getElementById("signupEmail").value.trim();
+      const fullName = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
       const password = document.getElementById("signupPassword").value;
 
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
 
+          // Save user info in Firestore
           return db.collection("users").doc(user.uid).set({
             uid: user.uid,
             fullName: fullName,
