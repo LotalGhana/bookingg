@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="form-box">
+    <h2>Create Account</h2>
+    <input type="email" id="signup-email" placeholder="Email" required>
+    <input type="password" id="signup-password" placeholder="Password" required>
+    <button onclick="signUp()">Sign Up</button>
+    <p>Already have an account? <a href="signin.html">Sign in</a></p>
+  </div>
+
+  <script>
+    function signUp() {
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("Account created!");
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    }
+  </script>
+
+<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
+    authDomain: "bbrghana.firebaseapp.com",
+    projectId: "bbrghana",
+    storageBucket: "bbrghana.firebasestorage.app",
+    messagingSenderId: "607583775596",
+    appId: "1:607583775596:web:c8a6877b516ee093c8e149"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+
+<script>
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      console.log("Logged in as: " + user.email);
+      // Show user-only features
+    } else {
+      // Hide features or redirect
+    }
+  });
+</script>
+
+</body>
+</html>
