@@ -3,11 +3,10 @@
 <head>
   <title>Sign Up</title>
   <link rel="stylesheet" href="style.css">
-  
-
 </head>
 <body>
-   <div class="auth-container">
+
+  <div class="auth-container">
     <h2>Sign Up</h2>
     <form id="signupForm">
       <input type="text" id="signupName" placeholder="Full Name" required />
@@ -17,109 +16,60 @@
     </form>
     <p>Already have an account? <a href="signin.html">Sign in</a></p>
   </div>
-  
 
+  <!-- Firebase SDKs (Compat version for browser) -->
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Initialization -->
   <script>
-    function signUp() {
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
+    const firebaseConfig = {
+      apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
+      authDomain: "bbrghana.firebaseapp.com",
+      projectId: "bbrghana",
+      storageBucket: "bbrghana.firebasestorage.app",
+      messagingSenderId: "607583775596",
+      appId: "1:607583775596:web:c8a6877b516ee093c8e149"
+    };
 
-      firebase.auth().createUserWithEmailAndPassword(email, password)
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
+
+  <!-- Sign Up Logic -->
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+
+      auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          alert("Account created!");
-          window.location.href = "index.html";
+          const user = userCredential.user;
+
+          // Save user info in Firestore
+          return db.collection("users").doc(user.uid).set({
+            uid: user.uid,
+            fullName: fullName,
+            email: user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        })
+        .then(() => {
+          alert("Account created successfully!");
+          window.location.href = "booking.html";
         })
         .catch((error) => {
-          alert(error.message);
+          console.error("Signup Error:", error);
+          alert("Error: " + error.message);
         });
-    }
+    });
   </script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-  <script src="firebase-init.js"></script>
-  <!-- Your Firebase Initialization Script -->
-<script src="/booking/firebase-init.js"></script>
 
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
-    authDomain: "bbrghana.firebaseapp.com",
-    projectId: "bbrghana",
-    storageBucket: "bbrghana.firebasestorage.app",
-    messagingSenderId: "607583775596",
-    appId: "1:607583775596:web:c8a6877b516ee093c8e149"
-  };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-</script>
-
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCpft5uBpz_vl9RzJb6Ryb4vE4qqyHSJ5c",
-    authDomain: "bbrghana.firebaseapp.com",
-    projectId: "bbrghana",
-    storageBucket: "bbrghana.firebasestorage.app",
-    messagingSenderId: "607583775596",
-    appId: "1:607583775596:web:c8a6877b516ee093c8e149"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-
-
-<script>
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      console.log("Logged in as: " + user.email);
-      // Show user-only features
-    } else {
-      // Hide features or redirect
-    }
-  });
-</script>
-
-  <script type="module">
-  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-  const auth = getAuth();
-  const db = getFirestore();
-
-  const signupForm = document.getElementById("signup-form");
-
-  signupForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const fullname = document.getElementById("fullname").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Save additional user info to Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        fullName: fullname,
-        email: user.email,
-        createdAt: new Date()
-      });
-
-      alert("Account created successfully!");
-      window.location.href = "booking.html"; // or wherever you want
-
-    } catch (error) {
-      console.error("Signup Error:", error.message);
-      alert("Signup failed: " + error.message);
-    }
-  });
-</script>
-
-  
 </body>
 </html>
