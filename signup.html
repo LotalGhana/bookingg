@@ -3,6 +3,8 @@
 <head>
   <title>Sign Up</title>
   <link rel="stylesheet" href="style.css">
+  
+
 </head>
 <body>
    <div class="auth-container">
@@ -15,6 +17,14 @@
     </form>
     <p>Already have an account? <a href="signin.html">Sign in</a></p>
   </div>
+  
+<!-- Firebase Core SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<!-- Your Firebase Initialization Script -->
+<script src="firebase-init.js"></script>
 
   <script>
     function signUp() {
@@ -32,10 +42,7 @@
     }
   </script>
 
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-  <script src="firebase-init.js"></script>
+
 <script>
   // Firebase Config
   const firebaseConfig = {
