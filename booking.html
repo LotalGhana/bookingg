@@ -121,7 +121,8 @@
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
+<script src="/path/to/your/firebase-init.js"></script>
+  
 <script>
   // EmailJS Init
   (function() {
@@ -273,6 +274,15 @@
       });
   });
 
+</script>
+
+  <script>
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // If not logged in, redirect to sign-in page
+      window.location.href = "signin.html";
+    }
+  });
 </script>
 
 
