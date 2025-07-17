@@ -59,5 +59,44 @@
   });
 </script>
 
+  <script type="module">
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const auth = getAuth();
+  const db = getFirestore();
+
+  const signupForm = document.getElementById("signup-form");
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullname = document.getElementById("fullname").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save additional user info to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: fullname,
+        email: user.email,
+        createdAt: new Date()
+      });
+
+      alert("Account created successfully!");
+      window.location.href = "booking.html"; // or wherever you want
+
+    } catch (error) {
+      console.error("Signup Error:", error.message);
+      alert("Signup failed: " + error.message);
+    }
+  });
+</script>
+
+  
 </body>
 </html>
